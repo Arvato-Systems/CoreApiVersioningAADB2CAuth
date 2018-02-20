@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CarExampleCoreApi.Model
+namespace CarExampleCoreApi.V1.Model
 {
     public class Car
     {

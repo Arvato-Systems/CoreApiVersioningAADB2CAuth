@@ -13,6 +13,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using CarExampleCoreApi.Security;
+using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 namespace CarExampleCoreApi
 {
@@ -49,15 +51,54 @@ namespace CarExampleCoreApi
             });
             services.AddSingleton<IAuthorizationHandler, MailDomainHandler>();
             services.AddMvc();
+            //services.AddSwaggerGen(c =>
+            //{
+            //    c.SwaggerDoc("v1", new Info { Title = "CAR API", Version = "v1", Description = "Simple API for Cars", Contact = new Contact { Name="Thomas Zühlke", Email="thomas.zuehlke@bertelsmann.de" } });
+            //});
+            services.AddMvcCore().AddVersionedApiExplorer(o => o.GroupNameFormat = "'v'VVV");
+            services.AddApiVersioning();
+            services.AddSwaggerGen(
+                options =>
+                {
+                    var provider = services.BuildServiceProvider()
+                                           .GetRequiredService<IApiVersionDescriptionProvider>();
+
+                    foreach (var description in provider.ApiVersionDescriptions)
+                    {
+                        options.SwaggerDoc(
+                            description.GroupName,
+                            new Info()
+                            {
+                                Title = $"CAR API {description.ApiVersion}",
+                                Version = description.ApiVersion.ToString()
+                            });
+                    }
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApiVersionDescriptionProvider provider)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwagger();
+            //app.UseSwaggerUI(c =>
+            //{
+            //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "CAR API V1");
+            //});
+            app.UseSwaggerUI(
+                options =>
+                {
+                    foreach (var description in provider.ApiVersionDescriptions)
+                    {
+                        options.SwaggerEndpoint(
+                            $"/swagger/{description.GroupName}/swagger.json",
+                            description.GroupName.ToUpperInvariant());
+                    }
+                });
 
             app.UseAuthentication();
             app.UseMvc();
