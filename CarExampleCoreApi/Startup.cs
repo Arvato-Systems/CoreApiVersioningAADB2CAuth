@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using CarExampleCoreApi.Security;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace CarExampleCoreApi
 {
@@ -49,6 +50,11 @@ namespace CarExampleCoreApi
             });
             services.AddSingleton<IAuthorizationHandler, MailDomainHandler>();
             services.AddMvc();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "CAR API", Version = "v1", Description = "Simple API for Cars", Contact = new Contact { Name = "Thomas Zühlke", Email = "thomas.zuehlke@bertelsmann.de" } });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,6 +64,12 @@ namespace CarExampleCoreApi
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CAR API V1");
+            });
 
             app.UseAuthentication();
             app.UseMvc();

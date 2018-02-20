@@ -36,6 +36,7 @@ namespace CarExampleCoreApi.Controllers
         // GET api/cars/5
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Car), 200)]
+        [ProducesResponseType(404)]
         public IActionResult Get(int id)
         {
             Car result = null;
@@ -53,6 +54,8 @@ namespace CarExampleCoreApi.Controllers
         // DELETE api/cars/5
         [Authorize(Policy = "Admin")]
         [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
         public IActionResult Delete(int id)
         {
             try
