@@ -53,7 +53,7 @@ namespace CarExampleCoreApi
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "CAR API", Version = "v1", Description = "Simple API for Cars", Contact = new Contact { Name = "Thomas Zühlke", Email = "thomas.zuehlke@bertelsmann.de" } });
+                c.SwaggerDoc("v2", new Info { Title = "CAR API", Version = "v2", Description = "Simple API for Cars", Contact = new Contact { Name = "Thomas Zühlke", Email = "thomas.zuehlke@bertelsmann.de" } });
             });
         }
 
@@ -68,7 +68,7 @@ namespace CarExampleCoreApi
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CAR API V1");
+                c.SwaggerEndpoint("/swagger/v2/swagger.json", "CAR API V2");
             });
 
             app.UseAuthentication();

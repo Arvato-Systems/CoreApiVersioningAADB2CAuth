@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using CarExampleCoreApi.Model;
+using CarExampleCoreApi.V2.Model;
 
-namespace CarExampleCoreApi.Controllers
+namespace CarExampleCoreApi.V2.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
@@ -18,10 +18,10 @@ namespace CarExampleCoreApi.Controllers
             if (cars != null) return;
             cars = new List<Car>()
             {
-                new Car(){ ID=0, Manufacturer="Ford", Model="Focus"},
-                new Car(){ ID=1, Manufacturer="Ford", Model="Kuga"},
-                new Car(){ ID=2, Manufacturer="Nissan", Model="Micra"},
-                new Car(){ ID=3, Manufacturer="Nissan", Model="Qashqai"}
+                new Car(){ ID=0, Manufacturer="Ford", Model="Focus", Horsepower=120},
+                new Car(){ ID=1, Manufacturer="Ford", Model="Kuga", Horsepower=140},
+                new Car(){ ID=2, Manufacturer="Nissan", Model="Micra", Horsepower=90},
+                new Car(){ ID=3, Manufacturer="Nissan", Model="Qashqai", Horsepower=120}
             };
         }
 
@@ -34,10 +34,10 @@ namespace CarExampleCoreApi.Controllers
         }
 
         // GET api/cars/5
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         [ProducesResponseType(typeof(Car), 200)]
         [ProducesResponseType(404)]
-        public IActionResult Get(int id)
+        public IActionResult GetById(int id)
         {
             Car result = null;
             try
@@ -51,9 +51,28 @@ namespace CarExampleCoreApi.Controllers
             return Ok(result);
         }
 
+        // GET api/cars/Ford
+        [HttpGet("{manufacturer:alpha}")]
+        [ProducesResponseType(typeof(IList<Car>), 200)]
+        [ProducesResponseType(404)]
+        public IActionResult GetByManufacturer(string manufacturer)
+        {
+            IList<Car> result = null;
+            try
+            {
+                result = cars.FindAll(c => c.Manufacturer == manufacturer);
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
+
         // DELETE api/cars/5
         [Authorize(Policy = "Admin")]
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         public IActionResult Delete(int id)
